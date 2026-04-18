@@ -27,6 +27,9 @@ public class User{
     }
 
     User(long id, String name, String email, String password, String role, Status Status){
+
+
+
         
     }
 }
