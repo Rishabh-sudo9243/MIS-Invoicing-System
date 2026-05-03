@@ -3,14 +3,12 @@ package com.example.MIS.Invoicing.System.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.example.MIS.Invoicing.System.entity.Status;
 import com.example.MIS.Invoicing.System.entity.User;
 import com.example.MIS.Invoicing.System.entity.VerificationToken;
 import com.example.MIS.Invoicing.System.repository.UserRepository;
 import com.example.MIS.Invoicing.System.repository.VerificationTokenRepository;
 import com.example.MIS.Invoicing.System.service.config.JwtUtil;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 import com.example.MIS.Invoicing.System.entity.PasswordResetToken;
