@@ -1,4 +1,4 @@
-package com.example.MIS.Invoicing.System.Entity;
+package com.example.MIS.Invoicing.System.entity;
 
 public enum Status {
     ACTIVE,
