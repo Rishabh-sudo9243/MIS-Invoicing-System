@@ -7,6 +7,8 @@ import com.example.MIS.Invoicing.System.entity.Group;
 import com.example.MIS.Invoicing.System.repository.ChainRepository;
 import com.example.MIS.Invoicing.System.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
+import main.java.com.example.MIS.Invoicing.System.repository.BrandRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChainService {
+
+    @Autowired
+    private BrandRepository brandRepository;
 
     private final ChainRepository chainRepository;
     private final GroupRepository groupRepository;
@@ -83,11 +88,10 @@ public class ChainService {
         Chain chain = chainRepository.findById(chainId)
                 .orElseThrow(() -> new RuntimeException("Chain not found with id: " + chainId));
 
-        // TODO: uncomment when Brand entity is ready
-        // boolean linkedToBrand = brandRepository.existsByChain_ChainIdAndIsActiveTrue(chainId);
-        // if (linkedToBrand) {
-        //     throw new RuntimeException("Cannot delete chain linked to a brand");
-        // }
+        boolean linkedToBrand = brandRepository.existsByChain_ChainIdAndIsActiveTrue(chainId);
+        if (linkedToBrand) {
+            throw new RuntimeException("Cannot delete chain linked to a brand");
+        }
 
         chain.setIsActive(false);
         chainRepository.save(chain);
