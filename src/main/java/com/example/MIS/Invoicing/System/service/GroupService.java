@@ -3,6 +3,7 @@ package com.example.MIS.Invoicing.System.service;
 import com.example.MIS.Invoicing.System.dto.GroupRequestDTO;
 import com.example.MIS.Invoicing.System.dto.GroupResponseDTO;
 import com.example.MIS.Invoicing.System.entity.Group;
+import com.example.MIS.Invoicing.System.repository.ChainRepository;
 import com.example.MIS.Invoicing.System.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,22 +55,25 @@ public class GroupService {
         return toDTO(groupRepository.save(group));
     }
 
-    // ── SOFT DELETE ────────────────────────────────────────────────────────
-    // Per requirement: group can only be deleted if NOT linked to any chain.
-    // For now the check is a placeholder — wire it to ChainRepository once Chain is built.
-    public void softDeleteGroup(Integer groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Group not found with id: " + groupId));
+    // In GroupService.java — inject ChainRepository and update softDeleteGroup
 
-        // TODO: uncomment this block when Chain entity is ready
-        // boolean linkedToChain = chainRepository.existsByGroup_GroupId(groupId);
-        // if (linkedToChain) {
-        //     throw new RuntimeException("Cannot delete group linked to a chain");
-        // }
+// Add this field at the top (alongside groupRepository):
+private final ChainRepository chainRepository;
 
-        group.setIsActive(false);
-        groupRepository.save(group);
+// Replace the softDeleteGroup method:
+public void softDeleteGroup(Integer groupId) {
+    Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> new RuntimeException("Group not found with id: " + groupId));
+
+    // Block delete if any active chain is linked to this group
+    boolean linkedToChain = chainRepository.existsByGroup_GroupIdAndIsActiveTrue(groupId);
+    if (linkedToChain) {
+        throw new RuntimeException("Cannot delete group: it is linked to one or more active chains");
     }
+
+    group.setIsActive(false);
+    groupRepository.save(group);
+}
 
     // ── MAPPER ────────────────────────────────────────────────────────────
     private GroupResponseDTO toDTO(Group group) {
