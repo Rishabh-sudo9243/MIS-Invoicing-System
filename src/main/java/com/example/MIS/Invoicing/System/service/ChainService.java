@@ -110,4 +110,8 @@ public class ChainService {
         dto.setUpdatedAt(chain.getUpdatedAt());
         return dto;
     }
+
+    public long countActiveChains() {
+        return chainRepository.findByIsActiveTrue().size();
+    }
 }

@@ -23,6 +23,14 @@ public class ChainController {
         return ResponseEntity.ok(chainService.getAllActiveChains());
     }
 
+    // GET /api/chains/count
+    @GetMapping("/count")
+    public ResponseEntity<?> getChainCount() {
+        return ResponseEntity.ok(
+            java.util.Map.of("totalChains", chainService.countActiveChains())
+        );
+    }
+
     // GET /api/chains?groupId=1   → filter by group
     @GetMapping(params = "groupId")
     public ResponseEntity<List<ChainResponseDTO>> getChainsByGroup(
