@@ -116,7 +116,11 @@ public class ZoneService {
                 .filter(z -> Boolean.TRUE.equals(z.getIsActive()))
                 .orElseThrow(() -> new RuntimeException("Zone not found with ID: " + zoneId));
 
-        // TODO: In Module 5 — guard if zone is linked to any Estimate
+
+        boolean hasEstimates = estimateRepository.existsByZoneName(zone.getZoneName());
+        if (hasEstimates) {
+            throw new RuntimeException("Cannot delete zone '" + zone.getZoneName() + "' because it is linked to active estimates.");
+        }
         zone.setIsActive(false);
         zoneRepository.save(zone);
     }
