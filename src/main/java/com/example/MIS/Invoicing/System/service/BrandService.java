@@ -6,6 +6,8 @@ import com.example.MIS.Invoicing.System.entity.Brand;
 import com.example.MIS.Invoicing.System.entity.Chain;
 import com.example.MIS.Invoicing.System.repository.BrandRepository;
 import com.example.MIS.Invoicing.System.repository.ChainRepository;
+import com.mis.invoicing.repository.ZoneRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class BrandService {
 
     @Autowired
     private ChainRepository chainRepository;
+
+    private final ZoneRepository zoneRepository;
 
     // ─── Helpers ────────────────────────────────────────────────
 
@@ -121,11 +125,10 @@ public class BrandService {
                 .filter(b -> Boolean.TRUE.equals(b.getIsActive()))
                 .orElseThrow(() -> new RuntimeException("Brand not found or inactive"));
 
-        // TODO: Once SubZone entity is built, uncomment this guard:
-        // boolean linkedToZone = subZoneRepository.existsByBrand_BrandIdAndIsActiveTrue(brandId);
-        // if (linkedToZone) {
-        //     throw new RuntimeException("Cannot delete brand linked to active zones");
-        // }
+        if (zoneRepository.existsByBrand_BrandIdAndIsActiveTrue(brandId)) {
+            throw new RuntimeException(
+            "Cannot delete brand '" + brand.getBrandName() + "' because it has active zones linked to it.");
+        }
 
         brand.setIsActive(false);
         brandRepository.save(brand);
